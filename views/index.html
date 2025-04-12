@@ -5,22 +5,55 @@
     <title></title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="css/index.css" rel="stylesheet" />
+    <link href="/css/index.css" rel="stylesheet" />
     <script
       src="https://unpkg.com/htmx.org@2.0.4"
       integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
       crossorigin="anonymous"
     ></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", (event) => {
+        document.body.addEventListener('htmx:beforeSwap', (evt) => {
+          /* Allow 422 responses to swap since we are using 422 to signal
+           * that the form was submitted with bad data and we want to
+           * rerender it with the erros
+           */
+          if (evt.detail.xhr.status === 422) {
+            // Set isError to false to avoid error logging in console
+            evt.detail.shouldSwap = true;
+            evt.detail.isError = false;
+          }
+        })
+      })
+    </script>
   </head>
   <body>
-    <div id="count">
-      {{ template "count" . }}
-    </div>
-    <button hx-target="#count" hx-post="/count">Count</button>
+    {{ template "form" .Form }}
+    <hr />
+    {{ template "contacts" .Data }}
   </body>
 </html>
 {{ end }}
 
-{{ block "count" . }} 
-  Count {{ .Count }}
+{{ block "form" . }}
+<form hx-swap="outerHTML" hx-post="/contacts">
+  Name: <input {{ if .Values.name }} value="{{ .Values.name }}" {{ end}} type="text" name="name" />
+  Email: <input {{ if .Values.email }} value="{{ .Values.email }}" {{ end}} type="email" name="email" />
+  <button type="submit">Create Contact</button>
+
+  {{ if .Errors.email }}
+    <div class="error">{{ .Errors.email }}</div>
+  {{ end }}
+</form>
+{{ end }}
+
+{{ block "contacts" . }}
+  <div id="contacts" class="flex">
+    {{ range .Contacts }}
+      <div>
+        Name: <span>{{ .Name }}</span>
+        Email: <span>{{ .Email }}</span>
+      </div>
+    {{ end }}
+  </div>
 {{ end }}
