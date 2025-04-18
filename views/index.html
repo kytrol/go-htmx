@@ -11,21 +11,7 @@
       integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
       crossorigin="anonymous"
     ></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", (event) => {
-        document.body.addEventListener('htmx:beforeSwap', (evt) => {
-          /* Allow 422 responses to swap since we are using 422 to signal
-           * that the form was submitted with bad data and we want to
-           * rerender it with the erros
-           */
-          if (evt.detail.xhr.status === 422) {
-            // Set isError to false to avoid error logging in console
-            evt.detail.shouldSwap = true;
-            evt.detail.isError = false;
-          }
-        })
-      })
-    </script>
+    <script type="module" src="js/script.js" defer></script>
   </head>
   <body>
     {{ template "form" .Form }}
@@ -37,8 +23,15 @@
 
 {{ block "form" . }}
 <form hx-swap="outerHTML" hx-post="/contacts">
-  Name: <input {{ if .Values.name }} value="{{ .Values.name }}" {{ end}} type="text" name="name" />
-  Email: <input {{ if .Values.email }} value="{{ .Values.email }}" {{ end}} type="email" name="email" />
+  Name: <input
+          {{ if .Values.name }} value="{{ .Values.name }}" {{ end }} 
+          type="text" 
+          name="name" />
+  Email: <input 
+            {{ if .Values.email }} value="{{ .Values.email }}" {{ end}}
+            type="email"
+            name="email" />
+            
   <button type="submit">Create Contact</button>
 
   {{ if .Errors.email }}
@@ -56,12 +49,20 @@
 {{ end }}
 
 {{ block "contact" . }}
-  <div id="contact-{{ .Id }}" class="flex">
+  <div id="contact-{{ .Id }}" class="flex contact">
+    <div id="contact-indicator-{{ .Id }}" class="htmx-indicator">
+      <img src="/img/bars.svg" alt="loading" />
+    </div>
     <div>
       Name: <span>{{ .Name }}</span>
       Email: <span>{{ .Email }}</span>
     </div>
-    <div hx-target="#contact-{{ .Id }}" hx-swap="outerHTML" hx-delete="/contacts/{{ .Id }}">
+    <div
+      hx-indicator="#contact-indicator-{{ .Id }}"
+      hx-target="#contact-{{ .Id }}"
+      hx-swap="outerHTML swap:250ms"
+      hx-delete="/contacts/{{ .Id }}"
+    >
       <svg>
         <use xlink:href="/img/defs.svg#trash" />
       </svg>
