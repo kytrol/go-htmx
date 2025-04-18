@@ -1,5 +1,8 @@
 .flex {
   display: flex;
+}
+
+.flex-col {
   flex-direction: column;
 }
 
@@ -18,4 +21,10 @@
 
 .htmx-request.htmx-indicator {
   opacity: 1;
+}
+
+svg {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
 }

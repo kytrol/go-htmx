@@ -3,6 +3,7 @@ package main
 import (
 	"html/template"
 	"io"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -22,13 +23,18 @@ func NewTemplates() *Templates {
 	}
 }
 
+var contactId = 0
+
 type Contact struct {
+	Id    int
 	Name  string
 	Email string
 }
 
 func newContact(name string, email string) Contact {
+	contactId++
 	return Contact{
+		Id:    contactId,
 		Name:  name,
 		Email: email,
 	}
@@ -36,7 +42,17 @@ func newContact(name string, email string) Contact {
 
 type Contacts = []Contact
 
-func (d Data) hasEmail(email string) bool {
+func (d *Data) indexOf(id int) int {
+	for i, contact := range d.Contacts {
+		if contact.Id == id {
+			return i
+		}
+	}
+
+	return -1
+}
+
+func (d *Data) hasEmail(email string) bool {
 	for _, contact := range d.Contacts {
 		if contact.Email == email {
 			return true
@@ -90,6 +106,7 @@ func main() {
 	page := newPage()
 	e.Use(middleware.Logger())
 	e.Static("/css", "css")
+	e.Static("/img", "images")
 
 	e.GET("/", func(c echo.Context) error {
 		return c.Render(200, "index", page)
@@ -108,9 +125,28 @@ func main() {
 			return c.Render(422, "form", formData)
 		}
 
-		page.Data.Contacts = append(page.Data.Contacts, newContact(name, email))
+		contact := newContact(name, email)
+		page.Data.Contacts = append(page.Data.Contacts, contact)
 
-		return c.Render(200, "contacts", page.Data)
+		c.Render(200, "form", newFormData())
+		return c.Render(200, "oob-contact", contact)
+	})
+
+	e.DELETE("/contacts/:id", func(c echo.Context) error {
+		idString := c.Param("id")
+		id, err := strconv.Atoi(idString)
+		if err != nil {
+			return c.String(400, "Invalid id")
+		}
+
+		index := page.Data.indexOf(id)
+		if index == -1 {
+			return c.String(404, "Contact not found")
+		}
+
+		page.Data.Contacts = append(page.Data.Contacts[:index], page.Data.Contacts[index+1:]...)
+
+		return c.NoContent(200)
 	})
 
 	e.Logger.Fatal(e.Start(":3000"))
