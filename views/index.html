@@ -2,9 +2,12 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title></title>
+    <title>htmx</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Grenze:wght@400;600&display=swap" rel="stylesheet">
     <link href="/css/index.css" rel="stylesheet" />
     <script
       src="https://unpkg.com/htmx.org@2.0.4"
@@ -14,48 +17,62 @@
     <script type="module" src="js/script.js" defer></script>
   </head>
   <body>
-    {{ template "form" .Form }}
-    <hr />
-    {{ template "contacts" .Data }}
+    <main>
+      {{ template "form" .Form }}
+      {{ template "contacts" .Data }}
+    </main>
   </body>
 </html>
 {{ end }}
 
 {{ block "form" . }}
 <form hx-swap="outerHTML" hx-post="/contacts">
-  Name: <input
-          {{ if .Values.name }} value="{{ .Values.name }}" {{ end }} 
-          type="text" 
-          name="name" />
-  Email: <input 
-            {{ if .Values.email }} value="{{ .Values.email }}" {{ end}}
-            type="email"
-            name="email" />
+  <div>
+    <label for="name">Name</label>
+    <input
+      id="name"
+      {{ if .Values.name }} value="{{ .Values.name }}" {{ end }} 
+      type="text" 
+      name="name"
+      required />
+  </div>
+  <div>
+    <label for="email">Email</label>
+    <input 
+      id="email"
+      {{ if .Values.email }} value="{{ .Values.email }}" {{ end}}
+      type="email"
+      name="email"
+      required />
+  </div>
             
-  <button type="submit">Create Contact</button>
-
   {{ if .Errors.email }}
-    <div class="error">{{ .Errors.email }}</div>
+    <div id="error">{{ .Errors.email }}</div>
   {{ end }}
+
+  <button type="submit">Create</button>
 </form>
 {{ end }}
 
 {{ block "contacts" . }}
-  <div id="contacts" class="flex flex-col">
-    {{ range .Contacts }}
-      {{ template "contact" . }}
-    {{ end }}
-  </div>
+  <section>
+    <h3>Contacts</h3>
+    <div id="contacts">
+      {{ range .Contacts }}
+        {{ template "contact" . }}
+      {{ end }}
+    </div>
+  </section>
 {{ end }}
 
 {{ block "contact" . }}
-  <div id="contact-{{ .Id }}" class="flex contact">
+  <div id="contact-{{ .Id }}" class="contact">
     <div id="contact-indicator-{{ .Id }}" class="htmx-indicator">
       <img src="/img/bars.svg" alt="loading" />
     </div>
     <div>
-      Name: <span>{{ .Name }}</span>
-      Email: <span>{{ .Email }}</span>
+      <span>{{ .Name }}</span>
+      <span>({{ .Email }})</span>
     </div>
     <div
       hx-indicator="#contact-indicator-{{ .Id }}"
@@ -64,7 +81,7 @@
       hx-delete="/contacts/{{ .Id }}"
     >
       <svg>
-        <use xlink:href="/img/defs.svg#trash" />
+        <use href="/img/defs.svg#remove" />
       </svg>
     </div>
   </div>

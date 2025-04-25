@@ -1,13 +1,98 @@
-.flex {
+@import "/css/reset.css";
+
+:root {
+  --accent: #ff5449;
+  --bg: #130044;
+  --secondary: #938ea3;
+  --text: #e6dff7;
+
+  --shadow: 0 0.2rem 0.1rem -0.1rem rgba(0, 0, 0, 0.2),
+    0 0.1rem 0.1rem 0 rgba(0, 0, 0, 0.14), 0 0.1rem 0.3rem 0 rgba(0, 0, 0, 0.12);
+}
+
+html {
+  font-family: "Grenze", serif;
+  font-size: 62.5%;
+  font-style: normal;
+  font-weight: 400;
+  height: 100vh;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-size: 2.4rem;
+  margin: 0;
+}
+
+body,
+main {
+  height: 100%;
+}
+
+main {
   display: flex;
-}
-
-.flex-col {
+  align-items: center;
+  justify-content: center;
   flex-direction: column;
+  gap: 2rem;
 }
 
-.error {
-  color: #d32f2f;
+button {
+  background-color: var(--secondary);
+  box-shadow: var(--shadow);
+  color: var(--bg);
+  cursor: pointer;
+  font-size: 2rem;
+  margin-left: 0.8rem;
+}
+
+button,
+input {
+  border: 0;
+  border-radius: 0.3rem;
+  color: var(--bg);
+}
+
+input {
+  padding: 0.4rem;
+}
+
+svg {
+  fill: var(--accent);
+}
+
+form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  width: 50rem;
+}
+
+form > div {
+  flex: 1 0 100%;
+  text-align: center;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+section > h3 {
+  text-align: center;
+}
+
+form {
+  margin-bottom: 4.8rem;
+}
+
+#error {
+  color: var(--accent);
+  font-size: 2rem;
 }
 
 .htmx-indicator {
@@ -20,6 +105,16 @@
   opacity: 1;
 }
 
+.contact {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.2rem;
+  margin-top: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
 .contact.htmx-swapping {
   opacity: 0;
   transition: opacity 250ms ease-in;
@@ -27,10 +122,46 @@
 
 svg,
 img {
-  width: 1rem;
-  height: 1rem;
+  width: 2.4rem;
+  height: 2.4rem;
 }
 
 svg {
   cursor: pointer;
+}
+
+@media (min-width: 440px) {
+  body {
+    font-size: 3.2rem;
+  }
+
+  button {
+    font-size: 3rem;
+  }
+
+  #error {
+    font-size: 2.8rem;
+  }
+
+  svg,
+  img {
+    width: 3.6rem;
+    height: 3.6rem;
+  }
+}
+
+@media (min-width: 760px) {
+  body {
+    font-size: 4rem;
+  }
+
+  button {
+    font-size: 3.2rem;
+  }
+
+  form > div {
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+  }
 }

@@ -70,8 +70,8 @@ type Data struct {
 func newData() Data {
 	return Data{
 		Contacts: []Contact{
-			newContact("John", "jd@gmail.com"),
-			newContact("Clara", "cd@gmail.com"),
+			newContact("htmx", "htmx@gmail.com"),
+			newContact("Go", "go@gmail.com"),
 		},
 	}
 }
@@ -117,6 +117,15 @@ func main() {
 	e.POST("/contacts", func(c echo.Context) error {
 		name := c.FormValue("name")
 		email := c.FormValue("email")
+
+		if name == "" || email == "" {
+			formData := newFormData()
+			formData.Values["name"] = name
+			formData.Values["email"] = email
+			formData.Errors["email"] = "Name or email not provided"
+
+			return c.Render(422, "form", formData)
+		}
 
 		if page.Data.hasEmail(email) {
 			formData := newFormData()
